@@ -29,7 +29,6 @@ Outputs:
 """
 
 import argparse
-import struct
 import sys
 from pathlib import Path
 
@@ -263,7 +262,7 @@ def main():
     # Build new data
     new_move = build_bug_splitter_move_bytes(existing_flags=old_move[8])
     new_name = build_bug_splitter_name_bytes()
-    print(f"\nBug Splitter stats:")
+    print("\nBug Splitter stats:")
     print(f"  pow=200  type=Bug(6)  acc=100  pp=15  effect=43(HighCrit)  flags=0x{new_move[8]:02X}")
     print(f"  Name bytes: {new_name.hex()} → '{gba_decode(new_name)}'")
 
@@ -285,7 +284,7 @@ def main():
 
     # Report patch contents
     print(f"IPS patch  written: {out_path}  ({len(ips_data)} bytes)")
-    print(f"\nPatch contains 2 records:")
+    print("\nPatch contains 2 records:")
     print(f"  1. Move data  @ 0x{move_offset:08X}  ({MOVE_SIZE} bytes)")
     print(f"  2. Move name  @ 0x{name_offset:08X}  ({NAME_SIZE} bytes)")
     print(f"\nApply {out_path.name} to '{rom_path.name}' using Floating IPS or Lunar IPS.")

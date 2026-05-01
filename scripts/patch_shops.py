@@ -132,14 +132,13 @@ def patch_shops_h(poke_dir: Path) -> bool:
 
     # Also add to any TM-selling array
     tm_arrays_updated = 0
-    # Find all array names that contain TM items
     tm_array_names = re.findall(
         r"(s\w+(?:Item|Mart|Shop|Store|TM)\w*)\s*\[\s*\]\s*=\s*\{[^}]*ITEM_TM",
         content,
         re.IGNORECASE,
     )
 
-    for arr_name in tm_arrays_updated:
+    for arr_name in tm_array_names:
         content, changed = _add_to_array(content, arr_name, "ITEM_TM51")
         if changed:
             tm_arrays_updated += 1
@@ -262,7 +261,6 @@ def patch_c_sources(poke_dir: Path) -> bool:
             content,
             re.DOTALL,
         ):
-            array_body = m.group(1)
             array_name = m.group(2)
 
             # Prefer Lilycove / dept store arrays

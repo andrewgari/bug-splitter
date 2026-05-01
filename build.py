@@ -105,7 +105,7 @@ def setup_pokeemerald(skip_clone: bool):
         print(f"pokeemerald directory already present at {POKEEMERALD_DIR}")
         return
 
-    print(f"\n--- Cloning pokeemerald ---")
+    print("\n--- Cloning pokeemerald ---")
     run(["git", "clone", "--depth=1", POKEEMERALD_URL, str(POKEEMERALD_DIR)])
 
 
@@ -141,7 +141,7 @@ def build_rom(skip_build: bool):
     # Prepend devkitARM bin to PATH so arm-none-eabi-gcc is found
     env["PATH"] = str(Path(devkitarm) / "bin") + ":" + env.get("PATH", "")
 
-    print(f"\n--- Building pokeemerald (this takes a few minutes) ---")
+    print("\n--- Building pokeemerald (this takes a few minutes) ---")
     result = subprocess.run(
         ["make", "-j4"],
         cwd=str(POKEEMERALD_DIR),
