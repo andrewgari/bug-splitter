@@ -1,37 +1,69 @@
 # Bug Splitter — Pokemon Emerald Patch
 
-Adds **TM51 (Bug Splitter)** to Pokemon Emerald.
+> **Fan project — not affiliated with or endorsed by Nintendo, Creatures Inc., or Game Freak.**
+> Pokemon is a trademark of Nintendo. This project does not distribute any ROM files or copyrighted game assets.
 
-| Stat | Value |
-|------|-------|
-| Type | Bug (Physical in Gen 3) |
-| Power | 200 |
-| Accuracy | 100% |
-| PP | 15 |
-| Effect | High critical-hit ratio (like Slash) |
-| TM | TM51 — sold in shops for **1000g** |
-| Compatible | All 36 Bug-type Pokemon |
+A small fan-made patch for **Pokemon Emerald** that adds a brand new move: **Bug Splitter**.
 
-Bug-type Pokemon that can learn Bug Splitter via TM51:
+---
+
+## What is Bug Splitter?
+
+Bug Splitter is a powerful new physical move exclusive to Bug-type Pokemon. Think of it as the Bug type's answer to Hyper Beam — but with a high chance to land a critical hit, like Slash.
+
+| | |
+|---|---|
+| **Type** | Bug |
+| **Power** | 200 |
+| **Accuracy** | 100% |
+| **PP** | 15 |
+| **Effect** | High critical-hit ratio |
+| **How to get** | Buy TM51 from shops for 1,000 |
+
+Every Bug-type Pokemon in the game can learn it — all 36 of them, from Caterpie all the way to Armaldo.
+
+---
+
+## How to install
+
+You'll need two things before you start:
+
+1. **The patch file** — download `bug_splitter.ips` from this page
+2. **A patching tool** — download [Floating IPS](https://github.com/Alcaro/Flips) (free, Windows/Mac/Linux)
+3. **A clean Pokemon Emerald ROM** — this needs to be the US version (you'll need to source this yourself)
+
+**Steps:**
+
+1. Open Floating IPS
+2. Click **Apply Patch**
+3. Select `bug_splitter.ips` when asked for the patch
+4. Select your Emerald ROM when asked for the file to patch
+5. Load the newly patched ROM in your emulator and enjoy!
+
+> **Stacking patches?** If you're combining this with other Emerald patches, apply Bug Splitter **last**. Patches that change moves, TMs, or shop items may conflict.
+
+---
+
+## Common issues
+
+**The emulator says the ROM is corrupted or has a bad checksum**
+Make sure you're using the **US version** of Pokemon Emerald (the cartridge says "BPEE" on the back). European and Japanese versions are laid out differently and won't work.
+
+**TM51 teaches the wrong move, or a Pokemon's name looks garbled**
+The patch may not have applied cleanly. Try re-downloading `bug_splitter.ips` and applying it again to a fresh, unmodified ROM.
+
+---
+
+## Which Pokemon can learn it?
+
+All 36 Bug-type Pokemon available in Emerald:
+
 Caterpie, Metapod, Butterfree, Weedle, Kakuna, Beedrill, Paras, Parasect, Venonat, Venomoth, Scyther, Pinsir, Ledyba, Ledian, Spinarak, Ariados, Yanma, Pineco, Forretress, Scizor, Shuckle, Heracross, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Surskit, Masquerain, Nincada, Ninjask, Shedinja, Volbeat, Illumise, Anorith, Armaldo
 
 ---
 
-## Applying the patch (end users)
-
-1. Download `bug_splitter.ips`
-2. Get a clean **Pokemon Emerald US** ROM (`BPEE`, region code `0`)
-3. Open **[Floating IPS](https://github.com/Alcaro/Flips)** (or Lunar IPS)
-4. Click **Apply Patch** → select `bug_splitter.ips` → select your ROM
-5. Load the patched ROM in mGBA, VBA-M, or any GBA emulator
-
-> **Compatibility note:** The patch is generated against a clean Emerald ROM.
-> If you stack it with another patch, apply Bug Splitter **last**. Patches that
-> modify learnsets, TM items, or shop inventories may conflict.
-
----
-
-## Building the patch yourself
+<details>
+<summary>Developer / build-it-yourself info</summary>
 
 ### Prerequisites
 
@@ -42,7 +74,7 @@ Caterpie, Metapod, Butterfree, Weedle, Kakuna, Beedrill, Paras, Parasect, Venona
 | devkitARM | ARM cross-compiler for GBA — [install guide](https://devkitpro.org/wiki/Getting_Started) |
 | flips *(optional)* | Creates IPS/BPS files — [download](https://github.com/Alcaro/Flips/releases); a Python fallback is built in |
 
-### Steps
+### Build
 
 ```bash
 # 1. Install devkitPro / devkitARM (Linux example)
@@ -55,7 +87,7 @@ export DEVKITARM=$DEVKITPRO/devkitARM
 # 3. Build the patch
 python3 build.py --rom /path/to/emerald.gba
 
-# Output: bug_splitter.ips (in the current directory)
+# Output: bug_splitter.ips
 ```
 
 ### Options
@@ -79,15 +111,11 @@ python3 build.py --rom emerald.gba
 # After manual source edits (skip clone + patch steps)
 python3 build.py --rom emerald.gba --skip-clone --skip-patch
 
-# Just regenerate patch from an already-built ROM
+# Just regenerate the patch from an already-built ROM
 python3 build.py --rom emerald.gba --skip-clone --skip-patch --skip-build
 ```
 
----
-
-## How it works
-
-The build scripts modify these pokeemerald source files:
+### Source changes
 
 | File | Change |
 |------|--------|
@@ -100,39 +128,17 @@ The build scripts modify these pokeemerald source files:
 | `src/data/pokemon/tmhm_learnsets.h` | Grant TM51 compatibility to all 36 Bug-type Pokemon |
 | *(shop data)* | Add `ITEM_TM51` to Lilycove Dept Store (and other TM-selling marts) |
 
-### Adding TM51 (why it needs an HM shift)
+pokeemerald stores TM/HM compatibility as a 64-bit bitmask per species (`bits 0–49` = TM01–50, `bits 50–57` = HM01–08). Adding TM51 increments `NUM_TECHNICAL_MACHINES` from 50 to 51, which shifts HM bit positions automatically at compile time — no manual learnset transformation needed.
 
-pokeemerald stores TM/HM compatibility as a 64-bit bitmask per species:
+### Build troubleshooting
 
-```
-bits 0–49  → TM01–TM50
-bits 50–57 → HM01–HM08
-bits 58–63 → unused
-```
-
-Adding TM51 increments `NUM_TECHNICAL_MACHINES` from 50 to 51.  
-pokeemerald defines HM bit positions as `NUM_TECHNICAL_MACHINES + n`, so HMs
-automatically shift from bits 50–57 to bits 51–58 at **compile time** — no
-manual learnset transformation is needed.
-
----
-
-## Troubleshooting
-
-**Build fails: `arm-none-eabi-gcc: command not found`**  
-Install devkitARM and export `DEVKITPRO`/`DEVKITARM`. See the
-[devkitPro getting-started guide](https://devkitpro.org/wiki/Getting_Started).
+**`arm-none-eabi-gcc: command not found`**  
+Install devkitARM and export `DEVKITPRO`/`DEVKITARM`. See the [devkitPro getting-started guide](https://devkitpro.org/wiki/Getting_Started).
 
 **`patch_shops.py` warns it couldn't find shop data**  
-Shop inventory location varies by pokeemerald version. Manually add
-`ITEM_TM51` before the `ITEM_NONE` sentinel in the Lilycove Dept Store
-item array, then re-run with `--skip-clone --skip-patch`.
+Shop inventory location varies by pokeemerald version. Manually add `ITEM_TM51` before the `ITEM_NONE` sentinel in the Lilycove Dept Store item array, then re-run with `--skip-clone --skip-patch`.
 
 **TM51 taught but has wrong move / wrong Pokemon name shows**  
-The move name file was not auto-detected. Search for `gMoveNames` in the
-pokeemerald source and add `[MOVE_BUG_SPLITTER] = _("Bug Splitter"),` manually.
+The move name file was not auto-detected. Search for `gMoveNames` in the pokeemerald source and add `[MOVE_BUG_SPLITTER] = _("Bug Splitter"),` manually.
 
-**ROM checksum mismatch in emulator**  
-Make sure you used the correct US Emerald ROM (internal name `POKEMON EMERALD`,
-game code `BPEE`, revision `0`). European and Japanese versions have different
-offsets and will not build correctly.
+</details>
