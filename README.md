@@ -26,14 +26,6 @@ Because Bug Splitter occupies **move slot 15** (the same slot as Cut), the HM01 
 
 ---
 
-## Compatibility
-
-### Tested ROMs
-
-| ROM | Version | Result |
-|-----|---------|--------|
-| Moemon Emerald Vanilla+ | v1.1.0 | ✅ Working |
-
 ### Other Emerald-based ROMs
 
 `patch_rom_direct.py` locates the move data and name tables by searching for known byte signatures rather than using fixed offsets. This means it works on ROMs where the tables have moved due to other patches, as long as the Gen 3 Emerald move structure is intact.
